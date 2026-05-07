@@ -37,8 +37,9 @@ export async function middleware(request: NextRequest) {
   const isNextInternal =
     pathname.startsWith("/_next") || pathname.startsWith("/favicon");
   const isPublicApiRoute = pathname === "/api/stripe/webhook";
+  const isPublicPage = pathname === "/pricing";
 
-  if (!isAuthRoute && !isNextInternal && !isPublicApiRoute && !user) {
+  if (!isAuthRoute && !isNextInternal && !isPublicApiRoute && !isPublicPage && !user) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = "/auth/login";
     return NextResponse.redirect(loginUrl);

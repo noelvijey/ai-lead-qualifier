@@ -20,6 +20,16 @@ export function UserMenu({ email }: Props) {
   return (
     <div className="flex items-center gap-3">
       <a
+        href="/pricing"
+        className="text-xs font-mono tracking-widest transition-colors"
+        style={{ color: "var(--text-muted)" }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
+        onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
+      >
+        PRICING
+      </a>
+
+      <a
         href="/history"
         className="text-xs font-mono tracking-widest transition-colors"
         style={{ color: "var(--text-muted)" }}
