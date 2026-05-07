@@ -1,0 +1,19 @@
+{
+  "name": "lead-qualifier-backend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "trigger dev",
+    "deploy": "trigger deploy"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.55.0",
+    "@trigger.dev/sdk": "^4.4.5",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "trigger.dev": "^4.4.5",
+    "typescript": "^5.4.0"
+  }
+}

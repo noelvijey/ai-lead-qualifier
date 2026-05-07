@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment files — never commit secrets
+.env
+.env.local
+.env.*.local
+
+# Next.js build output
+frontend/.next/
+frontend/out/
+
+# Vercel
+.vercel/
+
+# TypeScript build output
+dist/
+build/
+*.tsbuildinfo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Trigger.dev
+.trigger/
+
+# Claude Code
+.agents/
+skills-lock.json

@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-base: #0B0B0A;
+    --bg-surface: #141412;
+    --bg-elevated: #1C1C1A;
+    --border: #2A2A27;
+    --border-strong: #3A3A35;
+    --text-primary: #F0EFE8;
+    --text-secondary: #9B9A93;
+    --text-muted: #5C5B56;
+    --accent: #D97706;
+    --accent-light: #F59E0B;
+    --accent-dim: rgba(217, 119, 6, 0.1);
+    --success: #10B981;
+    --danger: #EF4444;
+    --blue: #3B82F6;
+    --orange: #F97316;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-body), system-ui, sans-serif;
+  }
+
+  ::selection {
+    background-color: var(--accent);
+    color: var(--bg-base);
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--bg-base);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 3px;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    opacity: 0.4;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulseDot {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes arcDraw {
+  from {
+    stroke-dashoffset: 283;
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.45s ease both;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.35s ease both;
+}
+
+.animate-arc {
+  animation: arcDraw 1.2s cubic-bezier(0.4, 0, 0.2, 1) both;
+}

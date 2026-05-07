@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "dotenv": "^17.4.2",
+    "tsx": "^4.21.0"
+  },
+  "dependencies": {
+    "@trigger.dev/sdk": "^4.4.5"
+  }
+}
