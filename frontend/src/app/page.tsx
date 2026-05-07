@@ -1,12 +1,20 @@
 import { LeadForm } from "@/components/LeadForm";
 import { UserMenu } from "@/components/UserMenu";
+import { UsageBanner } from "@/components/UsageBanner";
 import { createClient } from "@/lib/supabase/server";
+import { getUserSubscription, getTodayUsageCount } from "@/lib/subscription";
 
 export default async function Home() {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  const subscription = user ? await getUserSubscription(user.id) : null;
+  const todayCount =
+    user && subscription?.plan !== "pro"
+      ? await getTodayUsageCount(user.id)
+      : 0;
 
   return (
     <div className="min-h-screen flex flex-col bg-base">
@@ -69,6 +77,9 @@ export default async function Home() {
 
       {/* Form */}
       <main className="flex-1 max-w-3xl mx-auto w-full px-5 py-10">
+        {user && subscription && (
+          <UsageBanner used={todayCount} limit={2} plan={subscription.plan} />
+        )}
         <LeadForm />
       </main>
 

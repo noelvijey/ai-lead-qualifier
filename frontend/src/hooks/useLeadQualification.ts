@@ -30,6 +30,11 @@ export function useLeadQualification() {
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
+        if (res.status === 429 && body.limitReached) {
+          throw new Error(
+            body.message ?? "Daily limit reached. Upgrade to Pro for unlimited access."
+          );
+        }
         throw new Error(body.error ?? "Failed to start qualification");
       }
 

@@ -29,6 +29,16 @@ export function UserMenu({ email }: Props) {
         HISTORY
       </a>
 
+      <a
+        href="/billing"
+        className="text-xs font-mono tracking-widest transition-colors"
+        style={{ color: "var(--text-muted)" }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
+        onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
+      >
+        BILLING
+      </a>
+
       <div className="h-4 w-px" style={{ backgroundColor: "var(--border-strong)" }} />
 
       <span

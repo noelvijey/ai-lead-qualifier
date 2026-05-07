@@ -186,6 +186,12 @@ The AI evaluates leads using two frameworks simultaneously. See `workflows/lead-
 | `NEXT_PUBLIC_TRIGGER_PROJECT_REF` | Your Trigger.dev project reference (e.g. `proj_abc123`) | Trigger.dev dashboard → Project Settings |
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | Supabase dashboard → Project Settings → API |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon/public key | Same location — safe to expose (RLS enforces row-level security) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service-role key — bypasses RLS. Used only in webhook handler | Never expose to browser. Supabase dashboard → Project Settings → API → service_role |
+| `STRIPE_SECRET_KEY` | Stripe secret API key — server-side only | Stripe Dashboard → Developers → API keys |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret — verifies webhook requests | Stripe Dashboard → Developers → Webhooks. For local dev: `stripe listen` prints this |
+| `STRIPE_PRICE_ID` | Stripe Price ID for the $29/month Pro plan | Stripe Dashboard → Products → create recurring price |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key — browser-safe | Stripe Dashboard → Developers → API keys |
+| `NEXT_PUBLIC_APP_URL` | Base URL of the app — used in Stripe redirect URLs | `http://localhost:3000` in dev, Vercel URL in prod (no trailing slash) |
 
 **Never commit `.env` or `.env.local` files.** Both are in `.gitignore`.
 Always update the corresponding `.example` file when adding a new variable.
@@ -255,6 +261,12 @@ Compiles and deploys the task to Trigger.dev cloud. Verify it appears under **Ta
    - `NEXT_PUBLIC_TRIGGER_PROJECT_REF`
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `STRIPE_SECRET_KEY`
+   - `STRIPE_WEBHOOK_SECRET`
+   - `STRIPE_PRICE_ID`
+   - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+   - `NEXT_PUBLIC_APP_URL`
 4. **Important**: Set **Root Directory** to `frontend/` in Vercel project settings.
 5. In Supabase dashboard → Authentication → Settings, add your Vercel production URL to **Site URL** and **Redirect URLs** (e.g. `https://your-app.vercel.app/auth/callback`).
 
@@ -276,14 +288,26 @@ Full runbook: `workflows/deployment.md`
 | `frontend/src/hooks/useLeadQualification.ts` | React hook: submit → poll → return result → save to history |
 | `frontend/src/components/LeadForm.tsx` | The main form component |
 | `frontend/src/components/ResultCard.tsx` | Result display (score, grade, summary, next action) |
-| `frontend/src/components/UserMenu.tsx` | Header user email + HISTORY link + LOG OUT button |
+| `frontend/src/components/UserMenu.tsx` | Header user email + HISTORY + BILLING links + LOG OUT button |
+| `frontend/src/components/UsageBanner.tsx` | Free-tier usage bar shown on home page (hides for Pro users) |
+| `frontend/src/components/CheckoutButton.tsx` | Client Component — initiates Stripe Checkout redirect |
+| `frontend/src/components/BillingPortalButton.tsx` | Client Component — opens Stripe Customer Portal |
 | `frontend/src/lib/types.ts` | TypeScript types mirroring backend schema |
 | `frontend/src/lib/supabase/client.ts` | Supabase browser client (Client Components) |
 | `frontend/src/lib/supabase/server.ts` | Supabase server client (Server Components, API routes) |
+| `frontend/src/lib/supabase/admin.ts` | Supabase service-role client — used ONLY in webhook handler |
+| `frontend/src/lib/stripe.ts` | Stripe client singleton |
+| `frontend/src/lib/subscription.ts` | getUserSubscription() + getTodayUsageCount() helpers |
 | `frontend/src/middleware.ts` | Session refresh + redirect unauthenticated users to /auth/login |
 | `frontend/src/app/auth/login/page.tsx` | Email+password sign in / sign up page |
 | `frontend/src/app/auth/callback/route.ts` | Email confirmation callback handler |
 | `frontend/src/app/history/page.tsx` | User's lead qualification history (expandable result cards) |
+| `frontend/src/app/pricing/page.tsx` | Free vs Pro pricing page with upgrade CTA |
+| `frontend/src/app/billing/page.tsx` | Current plan status + Stripe Customer Portal link |
+| `frontend/src/app/billing/success/page.tsx` | Post-checkout success confirmation |
+| `frontend/src/app/api/stripe/checkout/route.ts` | Creates Stripe Checkout session, lazily creates Stripe customer |
+| `frontend/src/app/api/stripe/portal/route.ts` | Creates Stripe Customer Portal session |
+| `frontend/src/app/api/stripe/webhook/route.ts` | Handles Stripe events — mirrors subscription state to Supabase |
 | `workflows/lead-qualification-logic.md` | AI prompt design and scoring rubric |
 | `tools/test-lead.ts` | CLI tool for firing a test qualification run |
 
@@ -318,6 +342,12 @@ Full runbook: `workflows/deployment.md`
    - The table in this CLAUDE.md
 
 6. **Schema drift**: If you rename a field in `backend/src/lib/schema.ts`, update `frontend/src/lib/types.ts` and `frontend/src/components/LeadForm.tsx` in the same commit.
+
+7. **Stripe webhook secret differs between environments**: The local dev `whsec_` from `stripe listen` is different from the production signing secret in the Stripe Dashboard. Use separate values in `.env.local` and Vercel.
+
+8. **Stripe Customer Portal must be configured**: Before the `/billing` page works, enable the Customer Portal in Stripe Dashboard → Billing → Customer portal → Configure. Without this, the portal session creation will fail.
+
+9. **Webhook fires slightly after checkout success redirect**: The `/billing/success` page doesn't verify plan status from Supabase (race condition). It always shows the success message. The plan will be correctly reflected on all other pages once the webhook has fired (usually within 1-2 seconds).
 
 ---
 
